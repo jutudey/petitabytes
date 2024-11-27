@@ -1,13 +1,20 @@
-import config
-import streamlit as st
 import pandas as pd
 import datetime
 import functions
-import plotly.express as px
-import matplotlib as plt
+import hmac
+import streamlit as st
+import config
+
+
+if not functions.check_password():
+    st.stop()  # Do not continue if check_password is not True.
+
+
+
+
 
 functions.set_page_definitition()
-st.title("Petitabytes PoC")
+st.title("📊  Petitabytes")
 
 df = pd.read_csv("data/2024-11-26T14-44_export_ezyVet_gardenVets.csv", low_memory=False)
 df['Invoice Date'] = pd.to_datetime(df['Invoice Date'])
@@ -36,7 +43,7 @@ df = df[(df['Invoice Date'] >= start_date) & (df['Invoice Date'] <= end_date)]
 # st.dataframe(df)
 
 # create a streamlit box to show the total number of consults in the period
-st.subheader('Consults')
+st.subheader('🩺   Consults')
 
 # count unique values in 'Consult Number' column and put in variable 'consult_count'
 consult_count = df['Consult Number'].nunique()
@@ -52,7 +59,7 @@ st.write('Percentage of consults with at least one vaccination invoice line:', f
 
 st.write('---')
 
-st.subheader('Vaccinations by Species')
+st.subheader('💉   Vaccinations by Species')
 
 col1, col2 = st.columns([1, 1])
 with col1:
@@ -106,44 +113,4 @@ with col2:
 
     st.dataframe(percentage_df)
 
-# make a bar chart showing the number of vaccinations by mont
-
-
-
-
-# fig = px.bar(df_vaccination, x='month_year', y='count', title='Vaccinations by Month')
-# st.plotly_chart(fig)
-
-
-
-# df_grouped = df.groupby(['Animal Code'])
-# st.dataframe(df_grouped)
-
-
-
-
-
-
 #
-# # add two streamlit columns
-# col1, col2 = st.columns([1, 1])
-#
-# with col1:
-# # group by 'Animal Code' and 'Species' and show a table of percentage of each Species
-#     df_grouped = df.groupby(['Animal Code', 'Species']).size().reset_index(name='count')
-#     df_grouped['percentage'] = (df_grouped['count'] / df_grouped['count'].sum()) * 100
-#     st.write(df_grouped)
-#
-# with col2:
-#     # group by 'Animal Code' and make an interactive pie chart showing species and breed
-#     df_grouped = df.groupby(['Species']).size().reset_index(name='count')
-#     df_grouped['percentage'] = (df_grouped['count'] / df_grouped['count'].sum()) * 100
-#     fig = px.pie(df_grouped, values='count', names='Species', title='Distribution by Species',
-#                  hover_data=['count', 'percentage'], labels={'count': 'Count', 'percentage': 'Percentage'})
-#     fig.update_traces(textinfo='label+percent')
-#     st.plotly_chart(fig)
-#
-# # make a sunburst chart showing the distribution of species and breed
-# df_grouped = df.groupby(['Species', 'Breed']).size().reset_index(name='count')
-# fig = px.sunburst(df_grouped, path=['Species', 'Breed'], values='count')
-# st.plotly_chart(fig, use_container_width=True)
