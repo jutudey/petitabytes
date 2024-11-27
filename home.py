@@ -49,6 +49,10 @@ st.subheader('🩺   Consults')
 consult_count = df['Consult Number'].nunique()
 st.write('Total number of consults in this period:', consult_count)
 
+st.write("")
+st.write("")
+st.write("")
+
 # ------------------------------
 # Vaccinations
 # ------------------------------
@@ -123,6 +127,9 @@ with col2:
 
     st.dataframe(percentage_df)
 
+st.write("")
+st.write("")
+st.write("")
 
 # ------------------------------
 # Neuters
@@ -138,7 +145,7 @@ subject_consults = df[df['Product Name'].isin(['Bitch Spay',
                                               'Dog Castration (retained/scrotal ablation)',
                                               'Repro - Rabbit Castration'])]
 # st.write('Number of neuters:', neuter_count)
-st.dataframe(subject_consults)
+# st.dataframe(subject_consults)
 
 subject_consults_count = subject_consults.shape[0]
 st.write('Total number of ' + subject + ' in this period:', subject_consults_count)
@@ -175,7 +182,9 @@ with col2:
     st.dataframe(percentage_df)
 
 
-
+st.write("")
+st.write("")
+st.write("")
 
 # ------------------------------
 # Diagnotics
@@ -241,11 +250,13 @@ with col2:
     st.plotly_chart(fig2, use_container_width=True)
 
 
-
+st.write("")
+st.write("")
+st.write("")
 
 
 # ------------------------------
-# Procedures
+# Surgeries
 # ------------------------------
 subject = 'Surgeries'
 st.subheader('🏥   ' + subject)
@@ -260,7 +271,7 @@ subject_consults = subject_consults[~subject_consults['Product Name'].isin(['Bit
                                               'Repro - Rabbit Castration'])]
 
 
-st.dataframe(subject_consults)
+# st.dataframe(subject_consults)
 
 subject_consults_count = subject_consults.shape[0]
 st.write('Total number of ' + subject + ' in this period:', subject_consults_count)
@@ -320,7 +331,9 @@ with col1:
 #     st.plotly_chart(fig3, use_container_width=True, key='Surgeries2')
 
 
-
+st.write("")
+st.write("")
+st.write("")
 
 # ------------------------------
 # Dental
@@ -331,7 +344,7 @@ st.subheader('🦷   ' + subject)
 # count of unique values in Consult Number column where at least one item in column 'Product Category' is 'Vaccination'
 subject_consults = df[df['Product Group'] == 'Dental']
 
-st.dataframe(subject_consults)
+# st.dataframe(subject_consults)
 
 subject_consults_count = subject_consults.shape[0]
 st.write('Total number of ' + subject + ' in this period:', subject_consults_count)
