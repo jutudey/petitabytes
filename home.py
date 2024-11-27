@@ -11,10 +11,6 @@ import matplotlib as plt
 if not functions.check_password():
     st.stop()  # Do not continue if check_password is not True.
 
-
-
-
-
 functions.set_page_definitition()
 st.title("📊  Petitabytes")
 
