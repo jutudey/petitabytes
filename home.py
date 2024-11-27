@@ -49,23 +49,33 @@ st.subheader('🩺   Consults')
 consult_count = df['Consult Number'].nunique()
 st.write('Total number of consults in this period:', consult_count)
 
+# ------------------------------
+# Vaccinations
+# ------------------------------
+
+
 st.subheader('💉   Vaccinations')
 
 
 # count of unique values in Consult Number column where at least one item in column 'Product Category' is 'Vaccination'
 vaccination_consult_count = df[df['Product Category'].str.contains('Vaccination', na=False)]['Consult Number'].nunique()
-st.write('Number of consults with at least one vaccination invoice line:', vaccination_consult_count)
+st.write('Number of consults with at least one vaccination administered:', vaccination_consult_count)
 
 # show vaccinations_by_species in % of consult_count    (vaccination_consult_count / consult_count) * 100
 vaccination_percentage = (vaccination_consult_count / consult_count) * 100
-st.write('Percentage of total number of consults with at least one vaccination invoice line:', f"{vaccination_percentage:.2f}%")
+st.write('Percentage of total number of consults with at least one vaccination:', f"{vaccination_percentage:.2f}%")
+
+# count of entries in 'Product Category' column where 'Product Category' is 'Vaccination'
+total_vaccination = df[df['Product Category'].str.contains('Vaccination', na=False)]['Product Category'].count()
+st.write('Total number of vaccinations administered in this period:', total_vaccination)
+
 
 st.write('---')
 
 
 col1, col2 = st.columns([1, 1])
 with col1:
-    st.write('Number of vaccinations by species')
+    st.write('Number of vaccination consults by species')
     # create a new dataframe with only the 'Consult Number', 'Product Category', 'Species', 'Breed', 'month_year' columns
     vaccination_consults = df[['Consult Number', 'Product Category', 'Species', 'Breed', 'month_year']]
     # Only show rows where 'Product Category' contains 'Vaccination'
@@ -84,7 +94,7 @@ with col1:
     st.dataframe(vaccination_consults)
 
 with col2:
-    st.write('Percentage of vaccinations by species')
+    st.write('Percentage by species')
     percentage_df = (vaccination_consults / vaccination_consult_count) * 100
     percentage_df = percentage_df.applymap(lambda x: f"{x:.2f}%")
 
@@ -97,9 +107,7 @@ st.write('---')
 col1, col2 = st.columns([1, 1])
 with col1:
 
-    # count of entries in 'Product Category' column where 'Product Category' is 'Vaccination'
-    total_vaccination = df[df['Product Category'].str.contains('Vaccination', na=False)]['Product Category'].count()
-    st.write('Total number of vaccinations administered in this period:', total_vaccination)
+    st.write('Total number of vaccinations administered by species')
 
     # make a table showing one column per entry in 'year_month' column and one row per unique value in 'Species' column.  the cells should contain the respectie vaccination_count
     df_vaccination = df[df['Product Category'].str.contains('Vaccination', na=False)]   # filter for rows where 'Product Category' contains 'Vaccination'
@@ -115,21 +123,104 @@ with col2:
 
     st.dataframe(percentage_df)
 
+
+# ------------------------------
+# Neuters
+# ------------------------------
+subject = 'Neuters'
 st.subheader('✂️   Neuters')
 
-
 # count of unique values in Consult Number column where at least one item in column 'Product Category' is 'Vaccination'
-neuter_consults = df[df['Product Name'].isin(['Bitch Spay', 'Cat Spay'])]['Consult Number']
+subject_consults = df[df['Product Name'].isin(['Bitch Spay',
+                                              'Cat Spay',
+                                              'Dog Castration',
+                                              'Cat Castration',
+                                              'Dog Castration (retained/scrotal ablation)',
+                                              'Repro - Rabbit Castration'])]
 # st.write('Number of neuters:', neuter_count)
-st.dataframe(neuter_consults)
+st.dataframe(subject_consults)
 
-
+subject_consults_count = subject_consults.shape[0]
+st.write('Total number of ' + subject + ' in this period:', subject_consults_count)
 
 # show vaccinations_by_species in % of consult_count    (neuter_count / consult_count) * 100
-vaccination_percentage = (neuter_count / consult_count) * 100
-st.write('Neuters in percentage of total number of consults:', f"{vaccination_percentage:.2f}%")
+subject_percentage = (subject_consults_count / consult_count) * 100
+st.write(subject + ' in percentage of total number of consults:', f"{subject_percentage:.2f}%")
 
 st.write('---')
+
+col1, col2 = st.columns([1, 1])
+with col1:
+    st.write('Number of ' + subject + ' by species')
+    # create a new dataframe with only the 'Consult Number', 'Product Category', 'Species', 'Breed', 'month_year' columns
+    subject_consults = subject_consults[['Consult Number', 'Product Category', 'Species', 'Breed', 'month_year']]
+    # remove duplicates
+    subject_consults = subject_consults.drop_duplicates()
+    # create a new dataframe where each unique value in month_year is a column and each unique value in 'Species' is a row.  The cells should contain the count of 'Product Category' entries
+    subject_consults = subject_consults.groupby(['month_year', 'Species']).size().reset_index(name='count')
+
+    # Pivot the DataFrame
+    subject_consults = subject_consults.pivot(index='Species', columns='month_year', values='count')
+
+    # Fill NaN values with 0
+    subject_consults = subject_consults.fillna(0)
+
+    st.dataframe(subject_consults)
+
+with col2:
+    st.write('Percentage of ' + subject + ' by species')
+    percentage_df = (subject_consults / vaccination_consult_count) * 100
+    percentage_df = percentage_df.applymap(lambda x: f"{x:.2f}%")
+
+    st.dataframe(percentage_df)
+
+
+
+
+# ------------------------------
+# Diagnotics
+# ------------------------------
+subject = 'Diagnostics'
+st.subheader('🩻️   ' + subject)
+
+# count of unique values in Consult Number column where at least one item in column 'Product Category' is 'Vaccination'
+subject_consults = df[df['Product Category'] == 'Diagnostic']
+
+st.dataframe(subject_consults)
+
+subject_consults_count = subject_consults.shape[0]
+st.write('Total number of ' + subject + ' in this period:', subject_consults_count)
+
+# show vaccinations_by_species in % of consult_count    (neuter_count / consult_count) * 100
+subject_percentage = (subject_consults_count / consult_count) * 100
+st.write(subject + ' in percentage of total number of consults:', f"{subject_percentage:.2f}%")
+
+st.write('---')
+
+col1, col2 = st.columns([1, 1])
+with col1:
+    st.write('Number of ' + subject + ' by species')
+    # create a new dataframe with only the 'Consult Number', 'Product Category', 'Species', 'Breed', 'month_year' columns
+    subject_consults = subject_consults[['Consult Number', 'Product Category', 'Species', 'Breed', 'month_year']]
+    # remove duplicates
+    subject_consults = subject_consults.drop_duplicates()
+    # create a new dataframe where each unique value in month_year is a column and each unique value in 'Species' is a row.  The cells should contain the count of 'Product Category' entries
+    subject_consults = subject_consults.groupby(['month_year', 'Species']).size().reset_index(name='count')
+
+    # Pivot the DataFrame
+    subject_consults = subject_consults.pivot(index='Species', columns='month_year', values='count')
+
+    # Fill NaN values with 0
+    subject_consults = subject_consults.fillna(0)
+
+    st.dataframe(subject_consults)
+
+with col2:
+    st.write('Percentage of ' + subject + ' by species')
+    percentage_df = (subject_consults / vaccination_consult_count) * 100
+    percentage_df = percentage_df.applymap(lambda x: f"{x:.2f}%")
+
+    st.dataframe(percentage_df)
 
 
 

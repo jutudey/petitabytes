@@ -5,7 +5,7 @@
 
 app_name = "Petitabytes v0.1"
 
-data_folder = 'data
+data_folder = 'data'
 
 required_files_description = [['ezyVet Invoice Lines',
                                    'Invoice Lines Report',
