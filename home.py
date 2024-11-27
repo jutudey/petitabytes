@@ -49,17 +49,19 @@ st.subheader('🩺   Consults')
 consult_count = df['Consult Number'].nunique()
 st.write('Total number of consults in this period:', consult_count)
 
+st.subheader('💉   Vaccinations')
+
+
 # count of unique values in Consult Number column where at least one item in column 'Product Category' is 'Vaccination'
 vaccination_consult_count = df[df['Product Category'].str.contains('Vaccination', na=False)]['Consult Number'].nunique()
 st.write('Number of consults with at least one vaccination invoice line:', vaccination_consult_count)
 
 # show vaccinations_by_species in % of consult_count    (vaccination_consult_count / consult_count) * 100
 vaccination_percentage = (vaccination_consult_count / consult_count) * 100
-st.write('Percentage of consults with at least one vaccination invoice line:', f"{vaccination_percentage:.2f}%")
+st.write('Percentage of total number of consults with at least one vaccination invoice line:', f"{vaccination_percentage:.2f}%")
 
 st.write('---')
 
-st.subheader('💉   Vaccinations by Species')
 
 col1, col2 = st.columns([1, 1])
 with col1:
@@ -113,4 +115,21 @@ with col2:
 
     st.dataframe(percentage_df)
 
-#
+st.subheader('✂️   Neuters')
+
+
+# count of unique values in Consult Number column where at least one item in column 'Product Category' is 'Vaccination'
+neuter_consults = df[df['Product Name'].isin(['Bitch Spay', 'Cat Spay'])]['Consult Number']
+# st.write('Number of neuters:', neuter_count)
+st.dataframe(neuter_consults)
+
+
+
+# show vaccinations_by_species in % of consult_count    (neuter_count / consult_count) * 100
+vaccination_percentage = (neuter_count / consult_count) * 100
+st.write('Neuters in percentage of total number of consults:', f"{vaccination_percentage:.2f}%")
+
+st.write('---')
+
+
+
