@@ -3,6 +3,7 @@ import datetime
 import functions
 import hmac
 import streamlit as st
+# from streamlit_scroll_navigation import scroll_navbar
 import config
 import plotly.express as px
 import matplotlib as plt
@@ -126,6 +127,7 @@ with col2:
     percentage_df = percentage_df.applymap(lambda x: f"{x:.2f}%")
 
     st.dataframe(percentage_df)
+
 
 st.write("")
 st.write("")
@@ -396,6 +398,34 @@ with col1:
 # with col2:
 #     fig3 = px.sunburst(subject_consults, path=['Product Group', 'Species', 'Product Name'], title='Diagnostics by Diagnostic Group')
 #     st.plotly_chart(fig3, use_container_width=True, key='Surgeries2')
+
+# insert an icicle chart to show the breakdown of diagnostics by species. the hierarchy should be Species -> Product Category -> Product group -> Product Name
+# st.dataframe(df)
+st.write("")
+st.write("")
+st.write("")
+
+st.subheader(':cat: :dog:   Visualisation of all clinical components of all consults for cats and dogs')
+# remove all rows from df where Product Name contains 'Fee'
+df = df[~df['Product Name'].str.contains('Fee', na=False)]
+
+
+# only where Species is Canine and Feline
+icicle_df = df[df['Species'].isin(['Canine', 'Feline'])]
+
+fig = px.icicle(icicle_df, path=['Species', 'Product Category', 'Product Group', 'Product Name'])
+st.plotly_chart(fig, use_container_width=True, height=1200)
+
+st.subheader(':mouse: :rabbit: :rat:   Visualisation of all clinical components of all consults for small furries')
+# remove all rows from df where Product Name contains 'Fee'
+
+# only where Species is Canine and Feline
+icicle_df = df[~df['Species'].isin(['Canine', 'Feline'])]
+
+fig = px.icicle(icicle_df, path=['Species', 'Product Category', 'Product Group', 'Product Name'])
+st.plotly_chart(fig, use_container_width=True, height=1200)
+
+
 
 
 
