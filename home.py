@@ -326,5 +326,68 @@ with col1:
 
 
 
+# ------------------------------
+# Dental
+# ------------------------------
+subject = 'Dentals'
+st.subheader('🦷   ' + subject)
+
+# count of unique values in Consult Number column where at least one item in column 'Product Category' is 'Vaccination'
+subject_consults = df[df['Product Group'] == 'Dental']
+
+st.dataframe(subject_consults)
+
+subject_consults_count = subject_consults.shape[0]
+st.write('Total number of ' + subject + ' in this period:', subject_consults_count)
+
+# show vaccinations_by_species in % of consult_count    (neuter_count / consult_count) * 100
+subject_percentage = (subject_consults_count / consult_count) * 100
+st.write(subject + ' in percentage of total number of consults:', f"{subject_percentage:.2f}%")
+
+st.write('---')
+
+col1, col2 = st.columns([1, 1])
+with col1:
+    st.write('Number of ' + subject + ' by species')
+    # create a new dataframe with only the 'Consult Number', 'Product Category', 'Species', 'Breed', 'month_year' columns
+    subject_consults = subject_consults[['Consult Number', 'Product Category', 'Product Group', 'Product Name', 'Species', 'Breed', 'month_year']]
+    # remove duplicates
+    subject_consults = subject_consults.drop_duplicates()
+    # create a new dataframe where each unique value in month_year is a column and each unique value in 'Species' is a row.  The cells should contain the count of 'Product Category' entries
+    subject_consults = subject_consults.groupby(['month_year', 'Species']).size().reset_index(name='count')
+
+    # Pivot the DataFrame
+    subject_consults = subject_consults.pivot(index='Species', columns='month_year', values='count')
+
+    # Fill NaN values with 0
+    subject_consults = subject_consults.fillna(0)
+
+    st.dataframe(subject_consults)
+
+
+with col2:
+    st.write('Percentage of ' + subject + ' by species')
+    percentage_df = (subject_consults / vaccination_consult_count) * 100
+    percentage_df = percentage_df.applymap(lambda x: f"{x:.2f}%")
+
+    st.dataframe(percentage_df)
+
+col1, col2 = st.columns([1, 1])
+
+with col1:
+# add a sunburst chart from plotly.express to show the breakdown of diagnostics by species. the hierarchy should be Species -> Product Category -> Product group -> Product Name
+
+    subject_consults = df[df['Product Group'] == 'Dental']
+
+    fig4 = px.sunburst(subject_consults, path=['Species', 'Product Name'], title=f"{subject} by Species")
+    st.plotly_chart(fig4, use_container_width=True,  key="Dental")
+    st.write('Make the chart interactive by clicking on the slices to show/hide data')
+    st.markdown("Click on the :material/Fullscreen: button to view the chart in full screen")
+#
+# with col2:
+#     fig3 = px.sunburst(subject_consults, path=['Product Group', 'Species', 'Product Name'], title='Diagnostics by Diagnostic Group')
+#     st.plotly_chart(fig3, use_container_width=True, key='Surgeries2')
+
+
 
 
