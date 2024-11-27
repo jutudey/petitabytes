@@ -4,6 +4,8 @@ import functions
 import hmac
 import streamlit as st
 import config
+import plotly.express as px
+import matplotlib as plt
 
 
 if not functions.check_password():
@@ -19,6 +21,8 @@ st.title("📊  Petitabytes")
 df = pd.read_csv("data/2024-11-26T14-44_export_ezyVet_gardenVets.csv", low_memory=False)
 df['Invoice Date'] = pd.to_datetime(df['Invoice Date'])
 df['month_year'] = pd.to_datetime(df['Invoice Date']).dt.to_period('M')
+# remove rows where 'Species' is NaN
+df = df.dropna(subset=['Species'])
 
 df.info()
 
@@ -201,7 +205,7 @@ col1, col2 = st.columns([1, 1])
 with col1:
     st.write('Number of ' + subject + ' by species')
     # create a new dataframe with only the 'Consult Number', 'Product Category', 'Species', 'Breed', 'month_year' columns
-    subject_consults = subject_consults[['Consult Number', 'Product Category', 'Species', 'Breed', 'month_year']]
+    subject_consults = subject_consults[['Consult Number', 'Product Category', 'Product Group', 'Product Name', 'Species', 'Breed', 'month_year']]
     # remove duplicates
     subject_consults = subject_consults.drop_duplicates()
     # create a new dataframe where each unique value in month_year is a column and each unique value in 'Species' is a row.  The cells should contain the count of 'Product Category' entries
@@ -215,12 +219,34 @@ with col1:
 
     st.dataframe(subject_consults)
 
+
 with col2:
     st.write('Percentage of ' + subject + ' by species')
     percentage_df = (subject_consults / vaccination_consult_count) * 100
     percentage_df = percentage_df.applymap(lambda x: f"{x:.2f}%")
 
     st.dataframe(percentage_df)
+
+col1, col2 = st.columns([1, 1])
+
+with col1:
+# add a sunburst chart from plotly.express to show the breakdown of diagnostics by species. the hierarchy should be Species -> Product Category -> Product group -> Product Name
+
+    subject_consults = df[df['Product Category'] == 'Diagnostic']
+    subject_consults = subject_consults[['Species', 'Product Group', 'Product Name']]
+
+    fig = px.sunburst(subject_consults, path=['Species', 'Product Group', 'Product Name'], title='Diagnostics by Species')
+    st.plotly_chart(fig, use_container_width=True)
+    st.write('Make the chart interactive by clicking on the slices to show/hide data')
+    st.markdown("Click on the :material/Fullscreen: button to view the chart in full screen")
+
+with col2:
+    fig = px.sunburst(subject_consults, path=['Product Group', 'Species', 'Product Name'], title='Diagnostics by Diagnostic Group')
+    st.plotly_chart(fig, use_container_width=True)
+
+
+
+
 
 
 
